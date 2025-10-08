@@ -1,0 +1,20 @@
+# Changes here will be overwritten by Copier
+_commit: 4.3.0
+_src_path: https://github.com/DiamondLightSource/python-copier-template.git
+author_email: urszula.neuman@diamond.ac.uk
+author_name: Urszula Neuman
+component_lifecycle: experimental
+component_owner: group:default/beamline-controls
+component_type: service
+description: FastCS support for Micro4 controller of UltraMircoPumpIII syringe pump.
+distribution_name: fastcs-wpi-micro4
+docker: true
+docker_debug: false
+docs_type: sphinx
+git_platform: github.com
+github_org: DiamondLightSource
+package_name: fastcs_wpi_micro4
+pypi: true
+repo_name: fastcs-wpi-micro4
+strict_typing: true
+type_checker: pyright

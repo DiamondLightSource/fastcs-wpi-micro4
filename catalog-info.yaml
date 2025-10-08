@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fastcs-wpi-micro4
+  title: fastcs-wpi-micro4
+  description: FastCS support for Micro4 controller of UltraMircoPumpIII syringe pump.
+spec:
+  type: service
+  lifecycle: experimental
+  owner: group:default/beamline-controls
