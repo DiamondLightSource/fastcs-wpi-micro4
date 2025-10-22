@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "WPI Micro IOC",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "fastcs_wpi_micro4",
+            "justMyCode": false,
+            "console": "integratedTerminal",
+            "args": [
+                "ioc",
+                "LAB30-MICRO4",
+            ]
+        },
+        {
             "name": "Debug Unit Test",
             "type": "debugpy",
             "request": "launch",
