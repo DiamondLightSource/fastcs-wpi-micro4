@@ -6,7 +6,7 @@ from typing import Optional
 import typer
 from fastcs.connections import IPConnectionSettings
 from fastcs.launch import FastCS
-from fastcs.transport.epics.ca.options import EpicsCAOptions
+from fastcs.transport.epics.ca.transport import EpicsCATransport
 from fastcs.transport.epics.options import EpicsGUIOptions, EpicsIOCOptions
 
 from fastcs_wpi_micro4 import __version__
@@ -49,7 +49,7 @@ def ioc(pv_prefix: str = typer.Argument()):
     controller = WpiMicro4Controller(connection_settings)
 
     # IOC options
-    options = EpicsCAOptions(
+    options = EpicsCATransport(
         ca_ioc=EpicsIOCOptions(pv_prefix=pv_prefix),
         gui=EpicsGUIOptions(
             output_path=ui_path / "wpi_micro4.bob", title=f"WPI-MICRO4 - {pv_prefix}"

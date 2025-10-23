@@ -1,49 +1,77 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
-from fastcs.attributes import AttrHandlerR, AttrR
+from fastcs.attribute_io import AttributeIO
+from fastcs.attribute_io_ref import AttributeIORef
+from fastcs.attributes import AttrR
 from fastcs.connections import (
     IPConnection,
     IPConnectionSettings,
 )
-from fastcs.controller import BaseController, Controller
+from fastcs.controller import Controller
 from fastcs.datatypes import String
 
 NumberT = TypeVar("NumberT", int, float)
 
 
 @dataclass
-class BeeperUpdater(AttrHandlerR):
+class WpiMicro4ControllerAttributeIORef(AttributeIORef):
+    name: str
+    _: KW_ONLY
     update_period: float | None = 0.2
-    _controller: WpiMicro4Controller | None = None
 
-    async def initialise(self, controller: BaseController):
-        assert isinstance(controller, WpiMicro4Controller)
-        self._controller = controller
 
-    @property
-    def controller(self) -> WpiMicro4Controller:
-        if self._controller is None:
-            raise RuntimeError("Handler not initialised")
+class WpiMicro4ControllerAttributeIO(
+    AttributeIO[NumberT, WpiMicro4ControllerAttributeIORef]
+):
+    def __init__(self, connection: IPConnection):
+        super().__init__()
 
-        return self._controller
+        self._connection = connection
 
-    async def update(self, attr: AttrR):  # type: ignore
-        response = await self.controller.connection.send_query("?1\n")  # type: ignore
-        value = response.strip("?1\n")
-        await attr.set(value)  # type: ignore
+    async def update(self, attr: AttrR[NumberT, WpiMicro4ControllerAttributeIORef]):
+        query = f"{attr.io_ref.name}?\n"
+        response = await self._connection.send_query(query)
+        value = response.strip(query + " ")
+
+        await attr.set(attr.dtype(value))
+
+    # async def send(
+    #    self, attr: AttrW[NumberT, WpiMicro4ControllerAttributeIORef], value: NumberT
+    # ) -> None:
+    #    command = f"{attr.io_ref.name}={attr.dtype(value)}"
+    #    await self._connection.send_command(f"{command}\n")
 
 
 class WpiMicro4Controller(Controller):
-    BEEPER1_ON = AttrR(String(), handler=BeeperUpdater())
+    BEEPER_ON1_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("1"))
+    BEEPER_ON2_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("2"))
+    PRESS_ONCE_TO_RUN1_RBV = AttrR(
+        String(), io_ref=WpiMicro4ControllerAttributeIORef("3")
+    )
+    PRESS_ONCE_TO_RUN2_RBV = AttrR(
+        String(), io_ref=WpiMicro4ControllerAttributeIORef("4")
+    )
+    MICROSTEPPING_ON1_RBV = AttrR(
+        String(), io_ref=WpiMicro4ControllerAttributeIORef("6")
+    )
+    MICROSTEPPING_ON2_RBV = AttrR(
+        String(), io_ref=WpiMicro4ControllerAttributeIORef("7")
+    )
+    GROUPED_MODE_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("M"))
+    SYRINGE_TYPE_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("S"))
+    PUMP_DIRECTION_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("D"))
+    PUMP_UNITS_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("U"))
+    PUMP_RUNNING_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("G"))
+
+    # GRUPED_MODE = AttrRW(String(), io_ref=WpiMicro4ControllerAttributeIORef("G")) #N
+    # NOT_GRUPED_MODE = AttrRW(String(), io_ref=WpiMicro4ControllerAttributeIORef("N"))
 
     def __init__(self, settings: IPConnectionSettings):
-        super().__init__()
-
         self._ip_settings = settings
         self.connection = IPConnection()
+
+        super().__init__(ios=[WpiMicro4ControllerAttributeIO(self.connection)])
 
     async def connect(self):
         await self.connection.connect(self._ip_settings)  # type: ignore
