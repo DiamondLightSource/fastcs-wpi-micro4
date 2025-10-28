@@ -34,7 +34,7 @@ class WpiMicro4ControllerAttributeIO(
         response = await self._connection.send_query(query)
         value = response.strip(query + " ")
 
-        await attr.set(attr.dtype(value))
+        await attr.update(attr.dtype(value))
 
     # async def send(
     #    self, attr: AttrW[NumberT, WpiMicro4ControllerAttributeIORef], value: NumberT
@@ -44,25 +44,25 @@ class WpiMicro4ControllerAttributeIO(
 
 
 class WpiMicro4Controller(Controller):
-    BEEPER_ON1_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("1"))
-    BEEPER_ON2_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("2"))
-    PRESS_ONCE_TO_RUN1_RBV = AttrR(
+    beeper_on1_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("1"))
+    beeper_on2_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("2"))
+    press_once_to_run1_rbv = AttrR(
         String(), io_ref=WpiMicro4ControllerAttributeIORef("3")
     )
-    PRESS_ONCE_TO_RUN2_RBV = AttrR(
+    press_once_to_run2_rbv = AttrR(
         String(), io_ref=WpiMicro4ControllerAttributeIORef("4")
     )
-    MICROSTEPPING_ON1_RBV = AttrR(
+    microstepping_on1_rbv = AttrR(
         String(), io_ref=WpiMicro4ControllerAttributeIORef("6")
     )
-    MICROSTEPPING_ON2_RBV = AttrR(
+    microstepping_on2_rbv = AttrR(
         String(), io_ref=WpiMicro4ControllerAttributeIORef("7")
     )
-    GROUPED_MODE_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("M"))
-    SYRINGE_TYPE_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("S"))
-    PUMP_DIRECTION_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("D"))
-    PUMP_UNITS_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("U"))
-    PUMP_RUNNING_RBV = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("G"))
+    grupped_mode_on_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("M"))
+    syringe_type_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("S"))
+    pump_direction_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("D"))
+    pump_units_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("U"))
+    pump_running_rbv = AttrR(String(), io_ref=WpiMicro4ControllerAttributeIORef("G"))
 
     # GRUPED_MODE = AttrRW(String(), io_ref=WpiMicro4ControllerAttributeIORef("G")) #N
     # NOT_GRUPED_MODE = AttrRW(String(), io_ref=WpiMicro4ControllerAttributeIORef("N"))
