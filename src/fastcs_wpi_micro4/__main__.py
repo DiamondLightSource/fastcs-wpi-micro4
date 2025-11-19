@@ -50,7 +50,7 @@ def ioc(pv_prefix: str = typer.Argument()):
 
     # IOC options
     options = EpicsCATransport(
-        ca_ioc=EpicsIOCOptions(pv_prefix=pv_prefix),
+        epicsca=EpicsIOCOptions(pv_prefix=pv_prefix),
         gui=EpicsGUIOptions(
             output_path=ui_path / "wpi_micro4.bob", title=f"WPI-MICRO4 - {pv_prefix}"
         ),
