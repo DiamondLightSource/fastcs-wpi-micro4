@@ -4,7 +4,7 @@ from typing import TypeVar
 
 from fastcs.attribute_io import AttributeIO
 from fastcs.attribute_io_ref import AttributeIORef
-from fastcs.attributes import AttrR, AttrW
+from fastcs.attributes import AttrR, AttrRW, AttrW
 from fastcs.connections import (
     IPConnection,
     IPConnectionSettings,
@@ -14,6 +14,26 @@ from fastcs.datatypes import Float, Int
 from fastcs.wrappers import command
 
 NumberT = TypeVar("NumberT", int, float)
+
+
+@dataclass
+class WpiMicro4ControllerLineIORef(AttributeIORef):
+    name: str
+    _: KW_ONLY
+    update_period: float | None = None
+
+
+class WpiMicro4ControllerLineIO(AttributeIO[NumberT, WpiMicro4ControllerLineIORef]):
+    def __init__(self, connection: IPConnection):
+        super().__init__()
+
+        self._connection = connection
+
+    async def send(
+        self, attr: AttrW[NumberT, WpiMicro4ControllerLineIORef], value: NumberT
+    ) -> None:
+        command = f"{attr.io_ref.name}{attr.dtype(value)};"
+        await self._connection.send_command(f"{command}")
 
 
 @dataclass
@@ -40,29 +60,37 @@ class WpiMicro4ControllerSettingIO(
 
 # queries only
 @dataclass
-class WpiMicro4ControllerAttributeIORef(AttributeIORef):
+class WpiMicro4ControllerQueryIORef(AttributeIORef):
     name: str
     _: KW_ONLY
     update_period: float | None = 0.5
 
 
 # Queries only
-class WpiMicro4ControllerAttributeIO(
-    AttributeIO[NumberT, WpiMicro4ControllerAttributeIORef]
-):
-    def __init__(self, connection: IPConnection):
+class WpiMicro4ControllerQueryIO(AttributeIO[NumberT, WpiMicro4ControllerQueryIORef]):
+    def __init__(
+        self,
+        connection: IPConnection,
+        line_number: AttrRW[NumberT, WpiMicro4ControllerLineIORef],
+    ):
         super().__init__()
 
+        self._line_number = line_number
         self._connection = connection
 
-    async def update(self, attr: AttrR[NumberT, WpiMicro4ControllerAttributeIORef]):
+    async def update(self, attr: AttrR[NumberT, WpiMicro4ControllerQueryIORef]):
         query = f"?{attr.io_ref.name}"
         response = await self._connection.send_query(f"{query}\r\n")
         # make sure the query and response match
         if query in response and ";" not in response:
             value = response.strip(query + " \r\n")
             await attr.update(attr.dtype(value))
-        # else: #what if it doesn't - new line arrives
+        else:  # what if it doesn't - new line arrives
+            value = response.strip(query + " \r\n")
+            value = value[1]
+            await self._line_number.update(self._line_number.dtype(value))
+            # how to update rbv of the line pv from here??
+            # how to change the name of the atribute from here???
 
     # volume_counter = AttrW(Float(), io_ref=WpiMicro4ControllerAttributeIORef("C"))
     # volume = AttrW(Float(), io_ref=WpiMicro4ControllerAttributeIORef("V"))
@@ -80,11 +108,11 @@ class WpiMicro4ControllerAttributeIO(
 
 
 class WpiMicro4Controller(Controller):
-    line_number = AttrW(Int(), io_ref=WpiMicro4ControllerSettingIORef("L"))
+    line_number = AttrRW(Int(), io_ref=WpiMicro4ControllerLineIORef("L"))
     volume_counter_1 = AttrW(
         Float(), io_ref=WpiMicro4ControllerSettingIORef("C")
     )  # TODO: check what happens to the value
-    volume_rbv = AttrR(Float(), io_ref=WpiMicro4ControllerAttributeIORef("V"))
+    volume_rbv = AttrR(Float(), io_ref=WpiMicro4ControllerQueryIORef("V"))
     # volume_counter_rbv = AttrR(Float(), io_ref=WpiMicro4ControllerAttributeIORef("C"))
     # delivery_rate_rbv = AttrR(Float(), io_ref=WpiMicro4ControllerAttributeIORef("R"))
     # volume_max_rate_rbv =
@@ -116,8 +144,9 @@ class WpiMicro4Controller(Controller):
 
         super().__init__(
             ios=[
-                WpiMicro4ControllerAttributeIO(self.connection),
+                WpiMicro4ControllerQueryIO(self.connection, self.line_number),
                 WpiMicro4ControllerSettingIO(self.connection),
+                WpiMicro4ControllerLineIO(self.connection),
             ]
         )
 
