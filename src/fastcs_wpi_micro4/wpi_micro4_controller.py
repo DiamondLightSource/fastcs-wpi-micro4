@@ -11,7 +11,7 @@ from fastcs.connections import (
 )
 from fastcs.controller import Controller
 from fastcs.datatypes import Bool, Float, Int, String
-from fastcs.wrappers import command, scan
+from fastcs.wrappers import scan
 
 NumberT = TypeVar("NumberT", int, float, str)
 
@@ -59,40 +59,12 @@ class WpiMicro4ControllerLineSettingIO(
 
         self._connection = connection
 
-    # async def force_terminate_task_group(self):
-    # """Used to force termination of a task group."""
-    # raise TerminateTaskGroup()
-
     async def send(
         self, attr: AttrW[NumberT, WpiMicro4ControllerLineSettingIORef], value: NumberT
     ) -> None:
-        # line_command = f"L{str(attr.io_ref.line_num)};"
         command = f"{attr.io_ref.name}{attr.dtype(value)};"
-        # await asyncio.gather(
-        # await self._connection.send_command(f"{line_command}\r\n"),
-        # await self.update(attr),
-        # await self._connection.send_query("?L;\r\n"),
-        await self._connection.send_command(f"{command}\r\n")
-        # resp =await self._connection.send_query("?V;\r\n"),
-        # )
 
-    # async def update(
-    # self, attr: AttrW[NumberT, WpiMicro4ControllerLineSettingIORef]):
-    # respose = await self._connection.send_query("?L;\r\n")
-    # respose = await self._connection.send_query("?V;\r\n")
-    # if "?V;" in response and ";" not in response:
-    # value = response.strip("?V" + " \r\n")
-    # await attr.update(attr.dtype(value))
-    # try:
-    #    async with asyncio.TaskGroup() as tg:
-    #        tg.create_task(self._connection.send_command(f"{line_command}\r\n"))
-    #        res = tg.create_task(self._connection.send_query(f"?L;\r\n"))
-    #        tg.create_task(self._connection.send_command(f"{command}\r\n"))
-    #        res = tg.create_task(self._connection.send_query(f"?V;\r\n"))
-    # asyncio.sleep(1)
-    # tg.create_task(force_terminate_task_group())
-    # except* TerminateTaskGroup:
-    #    pass
+        await self._connection.send_command(f"{command}\r\n")
 
 
 class WpiMicro4Controller(Controller):
@@ -243,34 +215,3 @@ class WpiMicro4Controller(Controller):
                 self.update_line_num(),
                 self.update_line_atrr(line),
             )
-
-    # TEST using a command to set a fixed volume value
-
-    async def set_value_number_l1(self, number: int):
-        await self.volume_l1.put(self.volume_l1.dtype(number), sync_setpoint=True)
-        await asyncio.sleep(0.1)
-
-    async def update_value_num_l1(self):
-        query = "?V;"
-        response = await self.connection.send_query(f"{query}\r\n")
-        if "V" in response:
-            value = response.strip(query + "; \r\n")
-            await self.volume_l1_rbv.update(value)
-
-    @command()
-    async def set_value_number_l1_1(self):
-        await asyncio.gather(
-            self.set_line_number(1),
-            self.update_line_num(),
-            self.set_value_number_l1(1),
-            self.update_value_num_l1(),
-        )
-
-    @command()
-    async def set_value_number_l1_2(self):
-        await asyncio.gather(
-            self.set_line_number(1),
-            self.update_line_num(),
-            self.set_value_number_l1(2),
-            self.update_value_num_l1(),
-        )
