@@ -1,4 +1,6 @@
 import asyncio
+import datetime
+import time
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
@@ -10,25 +12,22 @@ from fastcs.connections import (
     IPConnectionSettings,
 )
 from fastcs.controller import Controller
-from fastcs.datatypes import Bool, Float, Int, String
+from fastcs.datatypes import Bool, Float, String
 from fastcs.wrappers import scan
 
 NumberT = TypeVar("NumberT", int, float, str)
 
 
-# class TerminateTaskGroup(Exception):
-#    """Exception raised to terminate a task group."""
-
-
 @dataclass
-class WpiMicro4ControllerSettingIORef(AttributeIORef):
-    name: str
+class WpiMicro4ControllerCommandSettingIORef(AttributeIORef):
+    line_num: int
     _: KW_ONLY
     update_period: float | None = None
 
 
-class WpiMicro4ControllerSettingIO(
-    AttributeIO[NumberT, WpiMicro4ControllerSettingIORef]
+# for the settings which only requires sending a command
+class WpiMicro4ControllerCommandSettingIO(
+    AttributeIO[NumberT, WpiMicro4ControllerCommandSettingIORef]
 ):
     def __init__(self, connection: IPConnection):
         super().__init__()
@@ -36,49 +35,64 @@ class WpiMicro4ControllerSettingIO(
         self._connection = connection
 
     async def send(
-        self, attr: AttrW[NumberT, WpiMicro4ControllerSettingIORef], value: NumberT
+        self,
+        attr: AttrW[NumberT, WpiMicro4ControllerCommandSettingIORef],
+        value: NumberT,
     ) -> None:
-        command = f"{attr.io_ref.name}{attr.dtype(value)};"
-
-        await self._connection.send_command(f"{command}\r\n")
+        line_command = f"L{attr.io_ref.line_num};"
+        command = f"{attr.dtype(value)};"
+        await self._connection.send_query(f"{line_command}\n")
+        await self._connection.send_query(f"{command}\n")
 
 
 @dataclass
-class WpiMicro4ControllerLineSettingIORef(AttributeIORef):
+class WpiMicro4ControllerValueSettingIORef(AttributeIORef):
     name: str
     line_num: int
     _: KW_ONLY
     update_period: float | None = None
 
 
-class WpiMicro4ControllerLineSettingIO(
-    AttributeIO[NumberT, WpiMicro4ControllerLineSettingIORef]
+# for the settings which require both the command and value
+class WpiMicro4ControllerValueSettingIO(
+    AttributeIO[NumberT, WpiMicro4ControllerValueSettingIORef]
 ):
     def __init__(self, connection: IPConnection):
         super().__init__()
 
         self._connection = connection
 
-    async def send(
-        self, attr: AttrW[NumberT, WpiMicro4ControllerLineSettingIORef], value: NumberT
-    ) -> None:
-        command = f"{attr.io_ref.name}{attr.dtype(value)};"
+    async def task(self, ch):
+        await self._connection.send_command(f"{ch}")
+        time.sleep(0.5)
 
-        await self._connection.send_command(f"{command}\r\n")
+    async def send(
+        self, attr: AttrW[NumberT, WpiMicro4ControllerValueSettingIORef], value: NumberT
+    ) -> None:
+        line_command = f"L{attr.io_ref.line_num};"
+        command = f"{attr.io_ref.name}{attr.dtype(value)};"
+        await self._connection.send_query(f"{line_command}\n")
+        list_of_chars = list(command)
+        if len(list_of_chars) > 7:  # command letter + 4 numerals +'.' + ';'
+            print("Too many chars. The limit is 4.")
+        else:
+            for ch in list_of_chars:
+                await self.task(ch)
+            r2 = await self._connection.send_query("\n")
+            val = r2[-7:]
+            print(r2, " val only:", val)
+            # await self.update(Float(val))
 
 
 class WpiMicro4Controller(Controller):
-    line_number_attr = AttrW(Int(), io_ref=WpiMicro4ControllerSettingIORef("L"))
-    line_number_rbv = AttrR(Int())
-
     def __init__(self, settings: IPConnectionSettings):
         self._ip_settings = settings
         self.connection = IPConnection()
 
         super().__init__(
             ios=[
-                WpiMicro4ControllerSettingIO(self.connection),
-                WpiMicro4ControllerLineSettingIO(self.connection),
+                WpiMicro4ControllerValueSettingIO(self.connection),
+                WpiMicro4ControllerCommandSettingIO(self.connection),
             ]
         )
 
@@ -93,34 +107,36 @@ class WpiMicro4Controller(Controller):
         # floats
         float_atrr_base_names = [
             "volume_l",
-            # "volume_counter_l",
-            # "delivery_rate_l",
-            # "volume_max_rate_l",
-            # "step_rate_l",
-            # "number_of_steps_l",
+            "volume_counter_l",
+            "delivery_rate_l",
+            "volume_max_rate_l",
+            "step_rate_l",
+            "number_of_steps_l",
         ]
-        float_quaries = ["?V"]  # , "?C", "?R", "?X", "?P", "?T"]
+        float_quaries = ["?V", "?C", "?R", "?X", "?P", "?T"]
         # bools
         bool_atrr_base_names = [
-            "beeper_l"
-        ]  # , "press_once_to_run_l", "microstepping_on_l"]
-        bool_quaries = ["?1"]  # , "?3", "?6"]
+            "beeper_l",
+            "microstepping_on_l",
+        ]
+        bool_quaries = ["?1", "?6"]  # T/F
         # strings
         string_atrr_base_names = [
-            "mode_l",
-            # "pump_direction_l",
-            # "pump_units_l",
-            # "pump_running_l",
-            # "syringe_type_l",
+            "mode_l",  # G/N/D
+            "pump_direction_l",  # I/W
+            "rate_units_l",  # S/M
+            "pump_state_l",  # R/S
+            "type_l",  # A..F
+            "hold_toggle_l",  # H/T
         ]
-        string_quaries = ["?M"]  # , "?D", "?U", "?G", "?S"]
+        string_quaries = ["?M", "?D", "?U", "?G", "?S", "?3"]
 
         for line in range(4):
             name_query = {}
             for j in range(len(float_atrr_base_names)):
                 base_name = float_atrr_base_names[j]
                 attr_name = f"{base_name}{line + 1}_rbv"
-                setattr(self, attr_name, AttrR(Float()))
+                setattr(self, attr_name, AttrR(Float(prec=3)))
                 name_query[attr_name] = float_quaries[j]
             for j in range(len(bool_atrr_base_names)):
                 base_name = bool_atrr_base_names[j]
@@ -137,25 +153,18 @@ class WpiMicro4Controller(Controller):
         return name_query_list
 
     def creat_setting_attributes(self):
-        float_atrr_base_names = [
-            "volume_l",
-            # "volume_counter_l",
-            # "delivery_rate_l"
+        float_atrr_base_names = ["volume_l", "volume_counter_l", "delivery_rate_l"]
+        float_commands = ["V", "C", "R"]
+        string_atrr_base_names = [
+            "mode_l",  # P/N/D
+            "pump_direction_l",  # I/W
+            "rate_units_l",  # S/M
+            "pump_state_l",  # G/H
+            "beeper_l",  # 1 (on)/2(off)
+            "microstepping_on_l",  # 6(on)/7(off)
+            "hold_toggle_l",  # 3(hold)/4(toggle)
         ]
-        float_commands = ["V"]  # , "?C", "?R"]
-        bool_atrr_base_names = [
-            "infuse_mode_l",
-            # "withdraw_mode_l",
-            # "go_l",
-            # "halt_l",
-            # "rate_per_sec_l",
-            # "rate_per_min_l",
-            # "not_grupped_l", #?
-            # "grupped_l", #?
-            # "disabled_l"
-        ]
-        bool_commands = ["I"]  # , "W", "G", "H", "S", "M", "N", "P", "D" ]
-        for line in range(4):  # 4
+        for line in range(4):
             for j in range(len(float_atrr_base_names)):
                 base_name = float_atrr_base_names[j]
                 attr_name = f"{base_name}{line + 1}"
@@ -163,55 +172,80 @@ class WpiMicro4Controller(Controller):
                     self,
                     attr_name,
                     AttrW(
-                        Float(),
-                        io_ref=WpiMicro4ControllerLineSettingIORef(
+                        Float(prec=3),
+                        io_ref=WpiMicro4ControllerValueSettingIORef(
                             float_commands[j], line + 1
                         ),
                     ),
                 )
-            for j in range(len(bool_atrr_base_names)):
-                base_name = bool_atrr_base_names[j]
+            for j in range(len(string_atrr_base_names)):
+                base_name = string_atrr_base_names[j]
                 attr_name = f"{base_name}{line + 1}"
                 setattr(
                     self,
                     attr_name,
                     AttrW(
-                        Bool(),
-                        io_ref=WpiMicro4ControllerLineSettingIORef(
-                            bool_commands[j], line + 1
-                        ),
+                        String(),
+                        io_ref=WpiMicro4ControllerCommandSettingIORef(line + 1),
                     ),
                 )
+            # special case
+            base_name = "type_l"
+            attr_name = f"{base_name}{line + 1}"
+            setattr(
+                self,
+                attr_name,
+                AttrW(
+                    String(),
+                    io_ref=WpiMicro4ControllerValueSettingIORef("T", line + 1),
+                ),
+            )
 
-    async def set_line_number(self, number: int):
-        await self.line_number_attr.put(
-            self.line_number_attr.dtype(number), sync_setpoint=True
-        )
-        await asyncio.sleep(0.1)
-
-    async def update_line_num(self):
-        query = "?L;"
-        response = await self.connection.send_query(f"{query}\r\n")
-        if query in response:
-            value = response.strip(query + "; \r\n")
-            await self.line_number_rbv.update(value)
+    async def update_line_num(self, number: int):
+        query = f"L{number};"
+        try:
+            response = await self.connection.send_query(f"{query}\n")
+            return response
+        except ConnectionResetError:
+            print("NO RESPONSE when setting line number")
 
     async def update_value(self, atribute: AttrR[NumberT], query: str):
-        response = await self.connection.send_query(f"{query}\r\n")
-        if query in response and ";" not in response:
-            value = response.strip(query + " \r\n")
-            await atribute.update(value)
+        try:
+            response = await self.connection.send_query(f"{query}\n")
+            if query in response and ";" not in response:
+                value = response.strip(query + " \n")
+                await atribute.update(value)
+            return response
+        except ConnectionResetError:
+            print("NO RESPONSE when getting value")
+            print("Reconnecting")
+            await self.connect()
 
     async def update_line_atrr(self, line: int):
         name_query_dict = self.name_query_list[line]
+        responses = [str]
         for name, query in name_query_dict.items():
-            await self.update_value(getattr(self, name), query)
+            try:
+                response = await self.update_value(getattr(self, name), query)
+            except ValueError as e:
+                print(e.args)
+            responses.append(response)
+        return responses
 
-    @scan(0.1)
+    @scan(10)
     async def update_lines(self):
+        print("Scanning", datetime.datetime.utcnow())
         for line in range(4):
-            await asyncio.gather(
-                self.set_line_number(line + 1),
-                self.update_line_num(),
-                self.update_line_atrr(line),
-            )
+            print("Im alive", datetime.datetime.utcnow())
+            try:
+                async with asyncio.timeout(20):
+                    await asyncio.gather(
+                        self.update_line_num(line + 1), self.update_line_atrr(line)
+                    )
+            except TimeoutError:
+                print("Connection lost - reconnectiong")
+                time.sleep(1)
+                try:
+                    await self.connect()
+                except TimeoutError:
+                    print("Connection lost")
