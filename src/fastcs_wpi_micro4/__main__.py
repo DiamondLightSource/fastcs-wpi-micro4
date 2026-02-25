@@ -6,8 +6,9 @@ from typing import Optional
 import typer
 from fastcs.connections import IPConnectionSettings
 from fastcs.launch import FastCS
-from fastcs.transport.epics.ca.transport import EpicsCATransport
-from fastcs.transport.epics.options import EpicsGUIOptions, EpicsIOCOptions
+from fastcs.transports.epics import EpicsIOCOptions
+from fastcs.transports.epics.ca.transport import EpicsCATransport
+from fastcs.transports.epics.options import EpicsGUIOptions
 
 from fastcs_wpi_micro4 import __version__
 from fastcs_wpi_micro4.wpi_micro4_controller import WpiMicro4Controller

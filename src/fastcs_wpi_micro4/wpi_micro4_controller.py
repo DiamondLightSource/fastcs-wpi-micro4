@@ -3,7 +3,7 @@ from fastcs.connections import (
     IPConnection,
     IPConnectionSettings,
 )
-from fastcs.controller import Controller
+from fastcs.controllers import Controller
 from fastcs.datatypes import Float, String
 
 from fastcs_wpi_micro4.wpi_micro4_controller_command_setting import (

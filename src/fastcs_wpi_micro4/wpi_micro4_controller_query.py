@@ -1,12 +1,11 @@
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
-from fastcs.attribute_io import AttributeIO
-from fastcs.attribute_io_ref import AttributeIORef
-from fastcs.attributes import ONCE, AttrR
+from fastcs.attributes import AttributeIO, AttributeIORef, AttrR
 from fastcs.connections import (
     IPConnection,
 )
+from fastcs.util import ONCE
 
 NumberT = TypeVar("NumberT", int, float, str)
 
