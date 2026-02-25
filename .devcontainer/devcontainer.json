@@ -9,6 +9,12 @@
         // Allow X11 apps to run inside the container
         "DISPLAY": "${localEnv:DISPLAY}"
     },
+    "mounts": [
+                {"type": "bind",
+                "source":"/dev/ttyUSB0",
+                "target": "/dev/ttyUSB0"
+               }
+            ],
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
