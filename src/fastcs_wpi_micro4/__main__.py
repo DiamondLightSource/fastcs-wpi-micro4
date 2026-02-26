@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from fastcs.connections import IPConnectionSettings
 from fastcs.launch import FastCS
 from fastcs.transports.epics import EpicsIOCOptions
 from fastcs.transports.epics.ca.transport import EpicsCATransport
 from fastcs.transports.epics.options import EpicsGUIOptions
 
 from fastcs_wpi_micro4 import __version__
+from fastcs_wpi_micro4.usb_connection import USBConnectionSettings
 from fastcs_wpi_micro4.wpi_micro4_controller import WpiMicro4Controller
 
 __all__ = ["main"]
@@ -45,7 +45,7 @@ def main(
 def ioc(pv_prefix: str = typer.Argument()):
     ui_path = OPI_PATH if OPI_PATH.is_dir() else Path.cwd()
 
-    connection_settings = IPConnectionSettings("192.168.1.6", 7004)
+    connection_settings = USBConnectionSettings("/dev/ttyUSB0", 9600)
     # Create a controller instance
     controller = WpiMicro4Controller(connection_settings)
 

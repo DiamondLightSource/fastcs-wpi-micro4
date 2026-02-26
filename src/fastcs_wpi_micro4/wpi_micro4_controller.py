@@ -1,11 +1,8 @@
 from fastcs.attributes import AttrR, AttrRW
-from fastcs.connections import (
-    IPConnection,
-    IPConnectionSettings,
-)
 from fastcs.controllers import Controller
 from fastcs.datatypes import Float, String
 
+from fastcs_wpi_micro4.usb_connection import USBConnection, USBConnectionSettings
 from fastcs_wpi_micro4.wpi_micro4_controller_command_setting import (
     WpiMicro4ControllerCommandSettingIO,
     WpiMicro4ControllerCommandSettingIORef,
@@ -21,9 +18,9 @@ from fastcs_wpi_micro4.wpi_micro4_controller_value_setting import (
 
 
 class WpiMicro4Controller(Controller):
-    def __init__(self, settings: IPConnectionSettings):
-        self._ip_settings = settings
-        self.connection = IPConnection()
+    def __init__(self, settings: USBConnectionSettings):
+        self._usb_settings = settings
+        self.connection = USBConnection()
 
         super().__init__(
             ios=[
@@ -36,7 +33,7 @@ class WpiMicro4Controller(Controller):
         self.creat_setting_attributes()
 
     async def connect(self):
-        await self.connection.connect(self._ip_settings)
+        await self.connection.connect(self._usb_settings)
 
     def creat_setting_attributes(self):
         float_atrr_names_commands = ["volume_l", "volume_counter_l", "delivery_rate_l"]
@@ -58,7 +55,7 @@ class WpiMicro4Controller(Controller):
             "number_of_steps_l",
         ]
         float_queries_only = ["X", "T", "P"]
-        for line in range(4):
+        for line in range(2):
             for j in range(len(float_atrr_names_commands)):
                 base_name = float_atrr_names_commands[j]
                 attr_name = f"{base_name}{line + 1}"

@@ -1,13 +1,10 @@
-import time
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
 from fastcs.attributes import AttributeIO, AttributeIORef, AttrR, AttrW
-from fastcs.connections import (
-    IPConnection,
-    IPConnectionSettings,
-)
 from fastcs.util import ONCE
+
+from fastcs_wpi_micro4.usb_connection import USBConnection
 
 NumberT = TypeVar("NumberT", int, float, str)
 
@@ -26,7 +23,7 @@ class WpiMicro4ControllerValueSettingIORef(AttributeIORef):
 class WpiMicro4ControllerValueSettingIO(
     AttributeIO[NumberT, WpiMicro4ControllerValueSettingIORef]
 ):
-    def __init__(self, connection: IPConnection):
+    def __init__(self, connection: USBConnection):
         super().__init__()
 
         self._connection = connection
@@ -36,22 +33,22 @@ class WpiMicro4ControllerValueSettingIO(
             await self._connection.send_command(f"{ch}")
         except Exception as e:
             print(f"error: CHAR command - {e}")
-            await self._connection.connect(
-                IPConnectionSettings("192.168.1.6", 7004)
-            )  # "/dev/ttyUSB0:/dev/ttyUSB0"
-            time.wait(3)
+            # await self._connection.connect(
+            #   IPConnectionSettings("192.168.1.6", 7004)
+            # )  # "/dev/ttyUSB0:/dev/ttyUSB0"
+        # time.wait(3)
 
     async def send(
         self, attr: AttrW[NumberT, WpiMicro4ControllerValueSettingIORef], value: NumberT
     ) -> None:
         line_command = f"L{attr.io_ref.line_num};"
-        command = f"{attr.io_ref.command}{attr.dtype(value)};"
+        command = f"{attr.io_ref.command}{attr.dtype(value)}"
         try:
-            await self._connection.send_query(f"{line_command}\n")
+            await self._connection.send_query(f"{line_command}\r")
         except Exception as e:
             print(f"error: LINE query - {e}")
-            await self._connection.connect(IPConnectionSettings("192.168.1.6", 7004))
-            time.wait(3)
+            # await self._connection.connect(IPConnectionSettings("192.168.1.6", 7004))
+            # time.wait(3)
 
         list_of_chars = list(command)
         if len(list_of_chars) > 7:  # command letter + 4 numerals +'.' + ';'
@@ -60,9 +57,9 @@ class WpiMicro4ControllerValueSettingIO(
             for ch in list_of_chars:
                 await self.task(ch)
             try:
-                resp = await self._connection.send_query("\n")
+                resp = await self._connection.send_query("\r")
                 if len(resp) > 5:
-                    val = resp.strip(f"{attr.io_ref.command};\n ")
+                    val = resp.strip(f"{attr.io_ref.command}\r ")
                     print("val only:", val)
                     if ";" in val:  # for values
                         updated = val.split(";")[1]
@@ -71,19 +68,19 @@ class WpiMicro4ControllerValueSettingIO(
                     await attr.update(attr.dtype(updated))
             except Exception as e:
                 print(f"error: new line query - {e}")
-                await self._connection.connect(
-                    IPConnectionSettings("192.168.1.6", 7004)
-                )
-                time.wait(3)
+                # await self._connection.connect(
+                #    IPConnectionSettings("192.168.1.6", 7004)
+                # )
+                # time.wait(3)
 
     # run once at init stage
     async def update(
         self, attr: AttrR[NumberT, WpiMicro4ControllerValueSettingIORef]
     ) -> None:
-        line_command = f"L{attr.io_ref.line_num};"
-        await self._connection.send_query(f"{line_command}\n")
+        line_command = f"L{attr.io_ref.line_num}"
+        await self._connection.send_query(f"{line_command}\r")
         query = f"?{attr.io_ref.query}"
-        response = await self._connection.send_query(f"{query}\n")
-        value = response.strip(query + "; \n")
+        response = await self._connection.send_query(f"{query}\r")
+        value = response.strip(query)
 
         await attr.update(attr.dtype(value))
