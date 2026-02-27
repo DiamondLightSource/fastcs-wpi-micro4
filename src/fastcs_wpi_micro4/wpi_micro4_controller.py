@@ -1,8 +1,12 @@
-from fastcs.attributes import AttrR, AttrRW
+from fastcs.attributes import AttrR, AttrRW, AttrW
 from fastcs.controllers import Controller
 from fastcs.datatypes import Float, String
 
 from fastcs_wpi_micro4.usb_connection import USBConnection, USBConnectionSettings
+from fastcs_wpi_micro4.wpi_micro4_controller_command import (
+    WpiMicro4ControllerCommandIO,
+    WpiMicro4ControllerCommandIORef,
+)
 from fastcs_wpi_micro4.wpi_micro4_controller_command_setting import (
     WpiMicro4ControllerCommandSettingIO,
     WpiMicro4ControllerCommandSettingIORef,
@@ -27,6 +31,7 @@ class WpiMicro4Controller(Controller):
                 WpiMicro4ControllerValueSettingIO(self.connection),
                 WpiMicro4ControllerCommandSettingIO(self.connection),
                 WpiMicro4ControllerQueryIO(self.connection),
+                WpiMicro4ControllerCommandIO(self.connection),
             ]
         )
 
@@ -36,25 +41,38 @@ class WpiMicro4Controller(Controller):
         await self.connection.connect(self._usb_settings)
 
     def creat_setting_attributes(self):
-        float_atrr_names_commands = ["volume_l", "volume_counter_l", "delivery_rate_l"]
-        float_commands = ["V", "C", "R"]  # queries same as commands
-        float_queries = ["V", "C", "R"]
+        float_atrr_names_commands = ["volume_l", "delivery_rate_l"]
+        float_commands = ["V", "R"]
+        float_queries = ["V", "R"]
+        float_expeted_prefixes = [">Target Volume = ", ">Rate = "]
+
         string_atrr_base_names = [  # pv values are commands
-            "mode_l",  # P/N/D
             "pump_direction_l",  # I/W
+            "pump_state_l",  # G/H/U/*G/Z (kill)
             "rate_units_l",  # S/M
-            "pump_state_l",  # G/H
-            "beeper_l",  # 1 (on)/2(off)
-            "hold_toggle_l",  # 3(hold)/4(toggle)
-            "microstepping_on_l",  # 6(on)/7(off)
+            "mode_l",  # P/N/D
+            "motor_drive_l",  # BT/BS
+            "value_counter_mode_l",  # EI/EN
         ]
-        string_queries = ["M", "D", "U", "G", "1", "3", "6"]
-        float_atrr_names_queries = [
-            "maximum_rate_l",
-            "step_rate_l",
-            "number_of_steps_l",
+        string_queries = ["D", "G", "U", "M", "B", "E"]
+        string_expeted_prefixes = [
+            ">Direction: ",
+            ">Motor State: ",
+            ">Rate Units: ",
+            ">Mode: ",
+            ">",
+            ">",
         ]
-        float_queries_only = ["X", "T", "P"]
+
+        atrr_names_queries_only = [
+            "volume_couner_l",
+        ]
+        queries_only = ["C"]
+        queries_only_expected_prefixes = [">Volume Counter = "]
+
+        atrr_names_commands_only = ["pause_length_l", "beep_length_l"]
+        commands_only = ["A", "F"]
+
         for line in range(2):
             for j in range(len(float_atrr_names_commands)):
                 base_name = float_atrr_names_commands[j]
@@ -63,9 +81,25 @@ class WpiMicro4Controller(Controller):
                     self,
                     attr_name,
                     AttrRW(
-                        Float(prec=3),
+                        Float(prec=1),
                         io_ref=WpiMicro4ControllerValueSettingIORef(
-                            float_commands[j], float_queries[j], line + 1
+                            float_commands[j],
+                            float_queries[j],
+                            float_expeted_prefixes[j],
+                            line + 1,
+                        ),
+                    ),
+                )
+            for j in range(len(float_atrr_names_commands)):
+                base_name = atrr_names_commands_only[j]
+                attr_name = f"{base_name}{line + 1}"
+                setattr(
+                    self,
+                    attr_name,
+                    AttrW(
+                        Float(prec=1),
+                        io_ref=WpiMicro4ControllerCommandIORef(
+                            commands_only[j], line + 1
                         ),
                     ),
                 )
@@ -78,12 +112,12 @@ class WpiMicro4Controller(Controller):
                     AttrRW(
                         String(),
                         io_ref=WpiMicro4ControllerCommandSettingIORef(
-                            string_queries[j], line + 1
+                            string_queries[j], string_expeted_prefixes[j], line + 1
                         ),
                     ),
                 )
-            for j in range(len(float_atrr_names_queries)):
-                base_name = float_atrr_names_queries[j]
+            for j in range(len(atrr_names_queries_only)):
+                base_name = atrr_names_queries_only[j]
                 attr_name = f"{base_name}{line + 1}"
                 setattr(
                     self,
@@ -91,7 +125,7 @@ class WpiMicro4Controller(Controller):
                     AttrR(
                         Float(),
                         io_ref=WpiMicro4ControllerQueryIORef(
-                            float_queries_only[j], line + 1
+                            queries_only[j], queries_only_expected_prefixes[j], line + 1
                         ),
                     ),
                 )
@@ -103,6 +137,8 @@ class WpiMicro4Controller(Controller):
                 attr_name,
                 AttrRW(
                     String(),
-                    io_ref=WpiMicro4ControllerValueSettingIORef("T", "S", line + 1),
+                    io_ref=WpiMicro4ControllerValueSettingIORef(
+                        "T", "S", ">", line + 1
+                    ),
                 ),
             )
