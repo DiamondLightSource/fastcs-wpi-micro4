@@ -39,6 +39,9 @@ class WpiMicro4ControllerValueSettingIO(
             r = await self._connection.send_query(f"{command}\r")
             if "OK" in r:
                 await self.update(attr)
+                # This could work for R and V
+                # But R is now returning wrong responce
+                # await self.set(r, attr)
         except Exception as e:
             print(f"error: LINE query - {e}")
 
@@ -51,10 +54,16 @@ class WpiMicro4ControllerValueSettingIO(
 
         query = f"?{attr.io_ref.query}"
         response = await self._connection.send_query(f"{query}\r")
+        await self.set(response, attr)
+
+    async def set(
+        self, response, attr: AttrR[NumberT, WpiMicro4ControllerValueSettingIORef]
+    ):
         if f"{attr.io_ref.response_prefix}" in response:
             value = response.strip(f"{attr.io_ref.response_prefix}" + " \n\rOK\n\r")
-            if "L" in value and "Type" not in value:
+            value = value.replace("\n\r>OK\n\r", "")
+            if "L" in value:
                 value = value[:-2]  # remove the units as well
             await attr.update(attr.dtype(value))
         else:
-            raise Exception("Response doesn't much query")
+            raise Exception("Response doesn't match query")

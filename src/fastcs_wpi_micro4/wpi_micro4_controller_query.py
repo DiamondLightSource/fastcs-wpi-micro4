@@ -31,6 +31,7 @@ class WpiMicro4ControllerQueryIO(AttributeIO[NumberT, WpiMicro4ControllerQueryIO
         response = await self._connection.send_query(f"{query}\r")
         if f"{attr.io_ref.response_prefix}" in response:
             value = response.strip(f"{attr.io_ref.response_prefix}" + " \n\rOK\n\r")
+            value = value.replace("\n\r>OK\n\r", "")
             if "L" in value:
                 value = value[:-2]  # remove the units as well
 

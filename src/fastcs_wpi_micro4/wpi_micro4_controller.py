@@ -15,6 +15,10 @@ from fastcs_wpi_micro4.wpi_micro4_controller_query import (
     WpiMicro4ControllerQueryIO,
     WpiMicro4ControllerQueryIORef,
 )
+from fastcs_wpi_micro4.wpi_micro4_controller_type_setting import (
+    WpiMicro4ControllerTypeSettingIO,
+    WpiMicro4ControllerTypeSettingIORef,
+)
 from fastcs_wpi_micro4.wpi_micro4_controller_value_setting import (
     WpiMicro4ControllerValueSettingIO,
     WpiMicro4ControllerValueSettingIORef,
@@ -29,6 +33,7 @@ class WpiMicro4Controller(Controller):
         super().__init__(
             ios=[
                 WpiMicro4ControllerValueSettingIO(self.connection),
+                WpiMicro4ControllerTypeSettingIO(self.connection),
                 WpiMicro4ControllerCommandSettingIO(self.connection),
                 WpiMicro4ControllerQueryIO(self.connection),
                 WpiMicro4ControllerCommandIO(self.connection),
@@ -129,6 +134,18 @@ class WpiMicro4Controller(Controller):
                         ),
                     ),
                 )
+            # attr_volume read only like couner
+            # attr length
+            # pass it to this atribute
+            att_volume = AttrR(String())
+            base_name = "syringe_volume_l"
+            attr_name = f"{base_name}{line + 1}"
+            setattr(self, attr_name, att_volume)
+            att_length = AttrR(String())
+            base_name = "syringe_length_l"
+            attr_name = f"{base_name}{line + 1}"
+            setattr(self, attr_name, att_length)
+
             # special case
             base_name = "type_l"
             attr_name = f"{base_name}{line + 1}"
@@ -137,8 +154,8 @@ class WpiMicro4Controller(Controller):
                 attr_name,
                 AttrRW(
                     String(),
-                    io_ref=WpiMicro4ControllerValueSettingIORef(
-                        "T", "S", ">", line + 1
+                    io_ref=WpiMicro4ControllerTypeSettingIORef(
+                        ">", line + 1, att_volume, att_length
                     ),
                 ),
             )

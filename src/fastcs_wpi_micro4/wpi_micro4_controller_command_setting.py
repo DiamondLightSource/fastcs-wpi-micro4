@@ -17,6 +17,8 @@ class WpiMicro4ControllerCommandSettingNameDict:
         "Withdraw": "W",
         "Running": "G",
         "Stopped": "H",
+        # "Reset" : "Z",
+        # "Blocking_delivery" : "*G",
         "Paused": "U",
         "nL/Sec": "S",
         "nL/Min": "M",
@@ -27,7 +29,6 @@ class WpiMicro4ControllerCommandSettingNameDict:
         "Smooth Drive": "BS",
         "Delivered Volume": "EN",
         "Remaining Volume": "EI",
-        # "TypeA"
     }
 
 
