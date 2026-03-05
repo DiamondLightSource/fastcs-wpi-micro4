@@ -1,12 +1,8 @@
-from fastcs.attributes import AttrR, AttrRW, AttrW
+from fastcs.attributes import AttrR, AttrRW
 from fastcs.controllers import Controller
 from fastcs.datatypes import Float, String
 
 from fastcs_wpi_micro4.usb_connection import USBConnection, USBConnectionSettings
-from fastcs_wpi_micro4.wpi_micro4_controller_command import (
-    WpiMicro4ControllerCommandIO,
-    WpiMicro4ControllerCommandIORef,
-)
 from fastcs_wpi_micro4.wpi_micro4_controller_command_setting import (
     WpiMicro4ControllerCommandSettingIO,
     WpiMicro4ControllerCommandSettingIORef,
@@ -38,10 +34,9 @@ class WpiMicro4Controller(Controller):
             ios=[
                 WpiMicro4ControllerValueSettingIO(self.connection),
                 WpiMicro4ControllerTypeSettingIO(self.connection),
-                WpiMicro4ControllerCommandSettingIO(self.connection),
                 WpiMicro4ControllerQueryIO(self.connection),
-                WpiMicro4ControllerCommandIO(self.connection),
                 WpiMicro4ControllerStateSettingIO(self.connection),
+                WpiMicro4ControllerCommandSettingIO(self.connection),
             ]
         )
 
@@ -78,9 +73,6 @@ class WpiMicro4Controller(Controller):
         queries_only = ["C"]
         queries_only_expected_prefixes = [">Volume Counter = "]
 
-        atrr_names_commands_only = ["pause_length_l", "beep_length_l"]
-        commands_only = ["A", "F"]
-
         for line in range(1):
             for j in range(len(float_atrr_names_commands)):
                 base_name = float_atrr_names_commands[j]
@@ -95,19 +87,6 @@ class WpiMicro4Controller(Controller):
                             float_queries[j],
                             float_expeted_prefixes[j],
                             line + 1,
-                        ),
-                    ),
-                )
-            for j in range(len(atrr_names_commands_only)):
-                base_name = atrr_names_commands_only[j]
-                attr_name = f"{base_name}{line + 1}"
-                setattr(
-                    self,
-                    attr_name,
-                    AttrW(
-                        Float(prec=1),
-                        io_ref=WpiMicro4ControllerCommandIORef(
-                            commands_only[j], line + 1
                         ),
                     ),
                 )

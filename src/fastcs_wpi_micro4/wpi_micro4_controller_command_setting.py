@@ -14,11 +14,6 @@ class WpiMicro4ControllerCommandSettingNameDict:
     # maps names inserted by the user in the GUI to acuall Commands
     name_to_symbol = {
         "Infuse": "I",
-        # "Withdraw": "W",
-        # "Running": "G",
-        # "Stopped": "H",
-        # "Reset" : "Z",
-        # "Blocking_delivery" : "*G",
         "Paused": "U",
         "nL/Sec": "S",
         "nL/Min": "M",
