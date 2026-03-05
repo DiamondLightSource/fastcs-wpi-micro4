@@ -11,9 +11,9 @@ NumberT = TypeVar("NumberT", int, float, str)
 @dataclass
 class WpiMicro4ControllerStateSettingNameDict:
     name_to_symbol = {
-        "Running": "G",
-        "Stopped": "H",
-        "Paused": "U",
+        "Run": "G",
+        "Stop": "H",
+        "Pause": "U",
     }
 
 
