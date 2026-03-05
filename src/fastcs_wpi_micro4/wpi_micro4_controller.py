@@ -15,6 +15,10 @@ from fastcs_wpi_micro4.wpi_micro4_controller_query import (
     WpiMicro4ControllerQueryIO,
     WpiMicro4ControllerQueryIORef,
 )
+from fastcs_wpi_micro4.wpi_micro4_controller_state_setting import (
+    WpiMicro4ControllerStateSettingIO,
+    WpiMicro4ControllerStateSettingIORef,
+)
 from fastcs_wpi_micro4.wpi_micro4_controller_type_setting import (
     WpiMicro4ControllerTypeSettingIO,
     WpiMicro4ControllerTypeSettingIORef,
@@ -37,6 +41,7 @@ class WpiMicro4Controller(Controller):
                 WpiMicro4ControllerCommandSettingIO(self.connection),
                 WpiMicro4ControllerQueryIO(self.connection),
                 WpiMicro4ControllerCommandIO(self.connection),
+                WpiMicro4ControllerStateSettingIO(self.connection),
             ]
         )
 
@@ -53,16 +58,14 @@ class WpiMicro4Controller(Controller):
 
         string_atrr_base_names = [  # pv values are commands
             "pump_direction_l",  # I/W
-            "pump_state_l",  # G/H/U/*G/Z (kill)
             "rate_units_l",  # S/M
             "mode_l",  # P/N/D
             "motor_drive_l",  # BT/BS
-            "value_counter_mode_l",  # EI/EN
+            "volume_counter_mode_l",  # EI/EN
         ]
-        string_queries = ["D", "G", "U", "M", "B", "E"]
+        string_queries = ["D", "U", "M", "B", "E"]
         string_expeted_prefixes = [
             ">Direction: ",
-            ">Motor State: ",
             ">Rate Units: ",
             ">Mode: ",
             ">",
@@ -78,7 +81,7 @@ class WpiMicro4Controller(Controller):
         atrr_names_commands_only = ["pause_length_l", "beep_length_l"]
         commands_only = ["A", "F"]
 
-        for line in range(2):
+        for line in range(1):
             for j in range(len(float_atrr_names_commands)):
                 base_name = float_atrr_names_commands[j]
                 attr_name = f"{base_name}{line + 1}"
@@ -95,7 +98,7 @@ class WpiMicro4Controller(Controller):
                         ),
                     ),
                 )
-            for j in range(len(float_atrr_names_commands)):
+            for j in range(len(atrr_names_commands_only)):
                 base_name = atrr_names_commands_only[j]
                 attr_name = f"{base_name}{line + 1}"
                 setattr(
@@ -134,9 +137,23 @@ class WpiMicro4Controller(Controller):
                         ),
                     ),
                 )
-            # attr_volume read only like couner
-            # attr length
-            # pass it to this atribute
+            # state
+            state_base_name = "pump_state_l"
+            state_query = "G"
+            state_query_prefix = ">Motor State: "  # G/H/U/*G/Z (kill)
+            attr_name = f"{state_base_name}{line + 1}"
+            setattr(
+                self,
+                attr_name,
+                AttrRW(
+                    String(),
+                    io_ref=WpiMicro4ControllerStateSettingIORef(
+                        state_query, state_query_prefix, line + 1
+                    ),
+                ),
+            )
+
+            # type
             att_volume = AttrR(String())
             base_name = "syringe_volume_l"
             attr_name = f"{base_name}{line + 1}"
@@ -145,8 +162,6 @@ class WpiMicro4Controller(Controller):
             base_name = "syringe_length_l"
             attr_name = f"{base_name}{line + 1}"
             setattr(self, attr_name, att_length)
-
-            # special case
             base_name = "type_l"
             attr_name = f"{base_name}{line + 1}"
             setattr(

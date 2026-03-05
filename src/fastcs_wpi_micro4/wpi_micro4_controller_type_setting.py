@@ -36,8 +36,8 @@ class WpiMicro4ControllerTypeSettingIORef(AttributeIORef):
     # query: str - S
     response_prefix: str
     line_num: int
-    volume_att: AttrR
-    length_att: AttrR
+    volume_att: AttrR  # syringe volume
+    length_att: AttrR  # syringe lenght
     _: KW_ONLY
     update_period: float | None = ONCE
 
