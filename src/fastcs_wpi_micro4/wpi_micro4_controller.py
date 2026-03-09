@@ -1,11 +1,15 @@
 from fastcs.attributes import AttrR, AttrRW
 from fastcs.controllers import Controller
-from fastcs.datatypes import Float, String
+from fastcs.datatypes import Float, Int, String
 
 from fastcs_wpi_micro4.usb_connection import USBConnection, USBConnectionSettings
 from fastcs_wpi_micro4.wpi_micro4_controller_command_setting import (
     WpiMicro4ControllerCommandSettingIO,
     WpiMicro4ControllerCommandSettingIORef,
+)
+from fastcs_wpi_micro4.wpi_micro4_controller_line_setting import (
+    WpiMicro4ControllerLineSettingIO,
+    WpiMicro4ControllerLineSettingIORef,
 )
 from fastcs_wpi_micro4.wpi_micro4_controller_query import (
     WpiMicro4ControllerQueryIO,
@@ -34,6 +38,7 @@ class WpiMicro4Controller(Controller):
             ios=[
                 WpiMicro4ControllerValueSettingIO(self.connection),
                 WpiMicro4ControllerTypeSettingIO(self.connection),
+                WpiMicro4ControllerLineSettingIO(self.connection),
                 WpiMicro4ControllerQueryIO(self.connection),
                 WpiMicro4ControllerStateSettingIO(self.connection),
                 WpiMicro4ControllerCommandSettingIO(self.connection),
@@ -49,7 +54,7 @@ class WpiMicro4Controller(Controller):
         float_atrr_names_commands = ["volume_l", "delivery_rate_l"]
         float_commands = ["V", "R"]
         float_queries = ["V", "R"]
-        float_expeted_prefixes = [">Target Volume = ", ">Rate = "]
+        float_expeted_prefixes = ["Target Volume = ", ">Rate = "]
 
         string_atrr_base_names = [  # pv values are commands
             "pump_direction_l",  # I/W
@@ -73,7 +78,23 @@ class WpiMicro4Controller(Controller):
         queries_only = ["C"]
         queries_only_expected_prefixes = [">Volume Counter = "]
 
-        for line in range(1):
+        # pump number
+        attr_name = "pump_number"
+        pump_command = "L"
+        pump_atrr_instance = AttrRW(
+            Int(),
+            io_ref=WpiMicro4ControllerLineSettingIORef(
+                pump_command,
+            ),
+            initial_value=1,
+        )
+        setattr(
+            self,
+            attr_name,
+            pump_atrr_instance,
+        )
+
+        for line in range(2):
             for j in range(len(float_atrr_names_commands)):
                 base_name = float_atrr_names_commands[j]
                 attr_name = f"{base_name}{line + 1}"
@@ -87,6 +108,7 @@ class WpiMicro4Controller(Controller):
                             float_queries[j],
                             float_expeted_prefixes[j],
                             line + 1,
+                            pump_atrr_instance,
                         ),
                     ),
                 )
@@ -99,7 +121,10 @@ class WpiMicro4Controller(Controller):
                     AttrRW(
                         String(),
                         io_ref=WpiMicro4ControllerCommandSettingIORef(
-                            string_queries[j], string_expeted_prefixes[j], line + 1
+                            string_queries[j],
+                            string_expeted_prefixes[j],
+                            line + 1,
+                            pump_atrr_instance,
                         ),
                     ),
                 )
@@ -112,7 +137,10 @@ class WpiMicro4Controller(Controller):
                     AttrR(
                         Float(),
                         io_ref=WpiMicro4ControllerQueryIORef(
-                            queries_only[j], queries_only_expected_prefixes[j], line + 1
+                            queries_only[j],
+                            queries_only_expected_prefixes[j],
+                            line + 1,
+                            pump_atrr_instance,
                         ),
                     ),
                 )
@@ -127,7 +155,7 @@ class WpiMicro4Controller(Controller):
                 AttrRW(
                     String(),
                     io_ref=WpiMicro4ControllerStateSettingIORef(
-                        state_query, state_query_prefix, line + 1
+                        state_query, state_query_prefix, line + 1, pump_atrr_instance
                     ),
                 ),
             )
@@ -149,7 +177,7 @@ class WpiMicro4Controller(Controller):
                 AttrRW(
                     String(),
                     io_ref=WpiMicro4ControllerTypeSettingIORef(
-                        ">", line + 1, att_volume, att_length
+                        ">", line + 1, att_volume, att_length, pump_atrr_instance
                     ),
                 ),
             )

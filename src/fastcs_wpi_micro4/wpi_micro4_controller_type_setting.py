@@ -1,7 +1,7 @@
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
-from fastcs.attributes import AttributeIO, AttributeIORef, AttrR, AttrW
+from fastcs.attributes import AttributeIO, AttributeIORef, AttrR, AttrRW, AttrW
 from fastcs.util import ONCE
 
 from fastcs_wpi_micro4.usb_connection import USBConnection
@@ -38,6 +38,7 @@ class WpiMicro4ControllerTypeSettingIORef(AttributeIORef):
     line_num: int
     volume_att: AttrR  # syringe volume
     length_att: AttrR  # syringe lenght
+    pump_atrr_instance: AttrRW
     _: KW_ONLY
     update_period: float | None = ONCE
 
@@ -55,28 +56,27 @@ class WpiMicro4ControllerTypeSettingIO(
     async def send(
         self, attr: AttrW[NumberT, WpiMicro4ControllerTypeSettingIORef], value: NumberT
     ) -> None:
-        line_command = f"L{attr.io_ref.line_num};"
-        value_long = f"{attr.dtype(value)}"
-        value = WpiMicro4ControllerTypeSettingNameDict.name_to_symbol[value_long]
-        command = f"T{value}"
-        try:
-            await self._connection.send_query(f"{line_command}\r")
-            r = await self._connection.send_query(f"{command}\r")
-            if "OK" in r:
-                await self.update(attr)
-        except Exception as e:
-            print(f"error: LINE query - {e}")
+        chosen_pump_number = attr.io_ref.pump_atrr_instance.get()
+        if chosen_pump_number == attr.io_ref.line_num:
+            value_long = f"{attr.dtype(value)}"
+            value = WpiMicro4ControllerTypeSettingNameDict.name_to_symbol[value_long]
+            command = f"T{value}"
+            try:
+                r = await self._connection.send_query(f"{command}\r")
+                if "OK" in r:
+                    await self.update(attr)
+            except Exception as e:
+                print(f"error: LINE query - {e}")
 
     # run once at init stage
     async def update(
         self, attr: AttrR[NumberT, WpiMicro4ControllerTypeSettingIORef]
     ) -> None:
-        line_command = f"L{attr.io_ref.line_num}"
-        await self._connection.send_query(f"{line_command}\r")
-
-        query = "?S"
-        response = await self._connection.send_query(f"{query}\r")
-        await self.set(response, attr)
+        chosen_pump_number = attr.io_ref.pump_atrr_instance.get()
+        if chosen_pump_number == attr.io_ref.line_num:
+            query = "?S"
+            response = await self._connection.send_query(f"{query}\r")
+            await self.set(response, attr)
 
     async def set(
         self, response, attr: AttrR[NumberT, WpiMicro4ControllerTypeSettingIORef]
