@@ -44,15 +44,19 @@ class WpiMicro4ControllerStateSettingIO(
         chosen_pump_number = attr.io_ref.pump_atrr_instance.get()
         if chosen_pump_number == attr.io_ref.line_num:
             command_long = f"{attr.dtype(value)}"
-            command = WpiMicro4ControllerStateSettingNameDict.name_to_symbol[
+            if (
                 command_long
-            ]
-            try:
-                r = await self._connection.send_query(f"{command}\r")
-                if "OK" in r:
-                    await self.update(attr)
-            except Exception as e:
-                print(f"error: new line query - {e}")
+                in WpiMicro4ControllerStateSettingNameDict.name_to_symbol.keys()
+            ):
+                command = WpiMicro4ControllerStateSettingNameDict.name_to_symbol[
+                    command_long
+                ]
+                try:
+                    r = await self._connection.send_query(f"{command}\r")
+                    if "OK" in r:
+                        await self.update(attr)
+                except Exception as e:
+                    print(f"error: new line query - {e}")
 
     # run periodically
     async def update(
