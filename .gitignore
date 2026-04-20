@@ -72,4 +72,4 @@ lockfiles/
 .ruff_cache/
 
 # bob files
-*.bob
+#*.bob
