@@ -1,4 +1,3 @@
-import time
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
@@ -49,4 +48,3 @@ class WpiMicro4ControllerLineSettingIO(
         self, value, attr: AttrR[NumberT, WpiMicro4ControllerLineSettingIORef]
     ):
         await attr.update(attr.dtype(value))
-        time.sleep(1)  # ????
