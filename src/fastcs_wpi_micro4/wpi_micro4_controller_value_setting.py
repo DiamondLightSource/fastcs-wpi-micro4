@@ -1,13 +1,10 @@
-import time
 from dataclasses import KW_ONLY, dataclass
 from typing import TypeVar
 
-from fastcs.attributes import AttributeIO, AttributeIORef, AttrR, AttrW
-from fastcs.connections import (
-    IPConnection,
-    IPConnectionSettings,
-)
+from fastcs.attributes import AttributeIO, AttributeIORef, AttrR, AttrRW, AttrW
 from fastcs.util import ONCE
+
+from fastcs_wpi_micro4.usb_connection import USBConnection
 
 NumberT = TypeVar("NumberT", int, float, str)
 
@@ -16,7 +13,9 @@ NumberT = TypeVar("NumberT", int, float, str)
 class WpiMicro4ControllerValueSettingIORef(AttributeIORef):
     command: str
     query: str
+    response_prefix: str
     line_num: int
+    pump_atrr_instance: AttrRW
     _: KW_ONLY
     update_period: float | None = ONCE
 
@@ -26,64 +25,45 @@ class WpiMicro4ControllerValueSettingIORef(AttributeIORef):
 class WpiMicro4ControllerValueSettingIO(
     AttributeIO[NumberT, WpiMicro4ControllerValueSettingIORef]
 ):
-    def __init__(self, connection: IPConnection):
+    def __init__(self, connection: USBConnection):
         super().__init__()
 
         self._connection = connection
 
-    async def task(self, ch):
-        try:
-            await self._connection.send_command(f"{ch}")
-        except Exception as e:
-            print(f"error: CHAR command - {e}")
-            await self._connection.connect(
-                IPConnectionSettings("192.168.1.6", 7004)
-            )  # "/dev/ttyUSB0:/dev/ttyUSB0"
-            time.wait(3)
-
     async def send(
         self, attr: AttrW[NumberT, WpiMicro4ControllerValueSettingIORef], value: NumberT
     ) -> None:
-        line_command = f"L{attr.io_ref.line_num};"
-        command = f"{attr.io_ref.command}{attr.dtype(value)};"
-        try:
-            await self._connection.send_query(f"{line_command}\n")
-        except Exception as e:
-            print(f"error: LINE query - {e}")
-            await self._connection.connect(IPConnectionSettings("192.168.1.6", 7004))
-            time.wait(3)
-
-        list_of_chars = list(command)
-        if len(list_of_chars) > 7:  # command letter + 4 numerals +'.' + ';'
-            print("Too many chars. The limit is 4.")
-        else:
-            for ch in list_of_chars:
-                await self.task(ch)
+        chosen_pump_number = attr.io_ref.pump_atrr_instance.get()
+        if chosen_pump_number == attr.io_ref.line_num:
+            command = f"{attr.io_ref.command}{attr.dtype(value)}"
             try:
-                resp = await self._connection.send_query("\n")
-                if len(resp) > 5:
-                    val = resp.strip(f"{attr.io_ref.command};\n ")
-                    print("val only:", val)
-                    if ";" in val:  # for values
-                        updated = val.split(";")[1]
-                    else:  # for syringe type
-                        updated = val[1].capitalize()
-                    await attr.update(attr.dtype(updated))
+                r = await self._connection.send_query(f"{command}\r")
+                if "OK" in r:
+                    await self.update(attr)
+                # This could work for R and V
+                # But R is now returning wrong responce
+                # await self.set(r, attr)
             except Exception as e:
-                print(f"error: new line query - {e}")
-                await self._connection.connect(
-                    IPConnectionSettings("192.168.1.6", 7004)
-                )
-                time.wait(3)
+                print(f"error: LINE query - {e}")
 
     # run once at init stage
     async def update(
         self, attr: AttrR[NumberT, WpiMicro4ControllerValueSettingIORef]
     ) -> None:
-        line_command = f"L{attr.io_ref.line_num};"
-        await self._connection.send_query(f"{line_command}\n")
-        query = f"?{attr.io_ref.query}"
-        response = await self._connection.send_query(f"{query}\n")
-        value = response.strip(query + "; \n")
+        chosen_pump_number = attr.io_ref.pump_atrr_instance.get()
+        if chosen_pump_number == attr.io_ref.line_num:
+            query = f"?{attr.io_ref.query}"
+            response = await self._connection.send_query(f"{query}\r")
+            await self.set(response, attr)
 
-        await attr.update(attr.dtype(value))
+    async def set(
+        self, response, attr: AttrR[NumberT, WpiMicro4ControllerValueSettingIORef]
+    ):
+        if f"{attr.io_ref.response_prefix}" in response:
+            value = response.strip(f">{attr.io_ref.response_prefix}" + " \n\rOK\n\r")
+            value = value.replace("\n\r>OK\n\r", "")
+            if "L" in value:
+                value = value[:-2]  # remove the units as well
+            await attr.update(attr.dtype(value))
+        else:
+            raise Exception("Response doesn't match query")

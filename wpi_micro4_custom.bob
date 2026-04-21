@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Saved on 2026-04-20 14:33:28 by rqq82173-->
+<display version="2.0.0">
+  <name>WPI-MICRO4 - LAB30-MICRO4</name>
+  <width>1012</width>
+  <height>380</height>
+  <grid_step_x>4</grid_step_x>
+  <grid_step_y>4</grid_step_y>
+  <widget type="rectangle" version="2.0.0">
+    <name>Rectangle_1</name>
+    <x>512</x>
+    <y>68</y>
+    <width>500</width>
+    <height>312</height>
+    <line_color>
+      <color name="INVALID" red="255" green="0" blue="255">
+      </color>
+    </line_color>
+    <line_style>2</line_style>
+    <background_color>
+      <color name="Read_Background" red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="Disable" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0 == 1">
+          <value>false</value>
+        </exp>
+        <pv_name>LAB30-MICRO4:PumpNumber_RBV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>Rectangle</name>
+    <x>12</x>
+    <y>68</y>
+    <width>500</width>
+    <height>312</height>
+    <line_style>2</line_style>
+    <background_color>
+      <color name="Transparent" red="255" green="255" blue="255" alpha="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="Disable" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0 == 2">
+          <value>false</value>
+        </exp>
+        <pv_name>LAB30-MICRO4:PumpNumber_RBV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Title</name>
+    <class>TITLE</class>
+    <text>WPI-MICRO4 - LAB30-MICRO4</text>
+    <x use_class="true">0</x>
+    <y use_class="true">0</y>
+    <width>484</width>
+    <height>25</height>
+    <font use_class="true">
+      <font name="Header 1" family="Liberation Sans" style="BOLD" size="22.0">
+      </font>
+    </font>
+    <foreground_color use_class="true">
+      <color name="Text" red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <transparent use_class="true">true</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_3</name>
+    <pv_name>LAB30-MICRO4:PumpStateL2_RBV</pv_name>
+    <x>896</x>
+    <y>87</y>
+    <width>91</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_1</name>
+    <text>PUMP 2</text>
+    <x>524</x>
+    <y>87</y>
+    <width>132</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Volume L2</text>
+    <x>525</x>
+    <y>112</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Delivery Rate L2</text>
+    <x>525</x>
+    <y>141</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:DeliveryRateL2_RBV</pv_name>
+    <x>786</x>
+    <y>141</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:VolumeL2_RBV</pv_name>
+    <x>786</x>
+    <y>114</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Pump Direction L2</text>
+    <x>525</x>
+    <y>168</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:PumpDirectionL2_RBV</pv_name>
+    <x>786</x>
+    <y>168</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Rate Units L2</text>
+    <x>525</x>
+    <y>196</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:RateUnitsL2_RBV</pv_name>
+    <x>786</x>
+    <y>195</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Mode L2</text>
+    <x>525</x>
+    <y>221</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:ModeL2_RBV</pv_name>
+    <x>786</x>
+    <y>221</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Motor Drive L2</text>
+    <x>525</x>
+    <y>249</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:MotorDriveL2_RBV</pv_name>
+    <x>786</x>
+    <y>249</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Value Counter Mode L2</text>
+    <x>525</x>
+    <y>281</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_7</name>
+    <pv_name>LAB30-MICRO4:VolumeCounterModeL2_RBV</pv_name>
+    <x>786</x>
+    <y>277</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Volume Couner L2</text>
+    <x>524</x>
+    <y>305</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:VolumeCounerL2</pv_name>
+    <x>682</x>
+    <y>305</y>
+    <width>305</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Type L2</text>
+    <x>524</x>
+    <y>332</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_4</name>
+    <pv_name>LAB30-MICRO4:TypeL2_RBV</pv_name>
+    <x>787</x>
+    <y>334</y>
+    <width>61</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_5</name>
+    <pv_name>LAB30-MICRO4:SyringeVolumeL2</pv_name>
+    <x>857</x>
+    <y>334</y>
+    <width>64</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_6</name>
+    <pv_name>LAB30-MICRO4:SyringeLengthL2</pv_name>
+    <x>931</x>
+    <y>334</y>
+    <width>56</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>TextEntry_1</name>
+    <pv_name>LAB30-MICRO4:PumpNumber_RBV</pv_name>
+    <x>260</x>
+    <y>39</y>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>Combo Box_7</name>
+    <pv_name>LAB30-MICRO4:PumpNumber</pv_name>
+    <x>148</x>
+    <y>36</y>
+    <height>25</height>
+    <items>
+      <item>1</item>
+      <item>2</item>
+    </items>
+  </widget>
+  <widget type="group" version="3.0.0">
+    <name>Group</name>
+    <x>679</x>
+    <y>87</y>
+    <width>212</width>
+    <height>270</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="Disable" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0 == 1">
+          <value>false</value>
+        </exp>
+        <pv_name>LAB30-MICRO4:PumpNumber_RBV</pv_name>
+      </rule>
+    </rules>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_3</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Run</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL2</pv_name>
+      <text>Run</text>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_4</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Pause</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL2</pv_name>
+      <text>Pause</text>
+      <x>73</x>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_5</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Stop</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL2</pv_name>
+      <text>Stop</text>
+      <x>144</x>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>TextEntry</name>
+      <pv_name>LAB30-MICRO4:VolumeL2</pv_name>
+      <y>27</y>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>TextEntry</name>
+      <pv_name>LAB30-MICRO4:DeliveryRateL2</pv_name>
+      <x>1</x>
+      <y>54</y>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_8</name>
+      <pv_name>LAB30-MICRO4:PumpDirectionL2</pv_name>
+      <y>81</y>
+      <height>20</height>
+      <items>
+        <item>Infuse</item>
+        <item>Withdraw</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_9</name>
+      <pv_name>LAB30-MICRO4:RateUnitsL2</pv_name>
+      <y>109</y>
+      <height>20</height>
+      <items>
+        <item>nL/Sec</item>
+        <item>nL/Min</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_10</name>
+      <pv_name>LAB30-MICRO4:ModeL2</pv_name>
+      <y>134</y>
+      <height>20</height>
+      <items>
+        <item>Non-Grouped</item>
+        <item>Grouped</item>
+        <item>Disabled</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_11</name>
+      <pv_name>LAB30-MICRO4:MotorDriveL2</pv_name>
+      <y>162</y>
+      <height>20</height>
+      <items>
+        <item>Smooth Drive</item>
+        <item>Max Load Drive</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_12</name>
+      <pv_name>LAB30-MICRO4:VolumeCounterModeL2</pv_name>
+      <x>1</x>
+      <y>190</y>
+      <height>20</height>
+      <items>
+        <item>Delivered Volume</item>
+        <item>Remaining Volume</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_13</name>
+      <pv_name>LAB30-MICRO4:TypeL2</pv_name>
+      <y>245</y>
+      <height>20</height>
+      <items>
+        <item>Type A</item>
+        <item>Type B</item>
+        <item>Type C</item>
+        <item>Type 1</item>
+        <item>Type 2</item>
+        <item>Type 3</item>
+        <item>Type 4</item>
+        <item>Type 5</item>
+        <item>Type 6</item>
+        <item>Type 7</item>
+        <item>Type 8</item>
+        <item>Type 9</item>
+      </items>
+    </widget>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>PUMP 1</text>
+    <x>28</x>
+    <y>87</y>
+    <width>132</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:PumpStateL1_RBV</pv_name>
+    <x>405</x>
+    <y>87</y>
+    <width>77</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Volume L1</text>
+    <x>28</x>
+    <y>118</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:VolumeL1_RBV</pv_name>
+    <x>281</x>
+    <y>118</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Delivery Rate L1</text>
+    <x>28</x>
+    <y>145</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Pump Direction L1</text>
+    <x>28</x>
+    <y>172</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:DeliveryRateL1_RBV</pv_name>
+    <x>281</x>
+    <y>145</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:PumpDirectionL1_RBV</pv_name>
+    <x>281</x>
+    <y>171</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:RateUnitsL1_RBV</pv_name>
+    <x>283</x>
+    <y>201</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Rate Units L1</text>
+    <x>28</x>
+    <y>201</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Mode L1</text>
+    <x>28</x>
+    <y>228</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:ModeL1_RBV</pv_name>
+    <x>283</x>
+    <y>228</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:MotorDriveL1_RBV</pv_name>
+    <x>283</x>
+    <y>254</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Motor Drive L1</text>
+    <x>28</x>
+    <y>254</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Value Counter Mode L1</text>
+    <x>28</x>
+    <y>282</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:VolumeCounterModeL1_RBV</pv_name>
+    <x>281</x>
+    <y>281</y>
+    <width>201</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:VolumeCounerL1</pv_name>
+    <x>185</x>
+    <y>313</y>
+    <width>297</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Volume Couner L1</text>
+    <x>28</x>
+    <y>313</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label</name>
+    <text>Type L1</text>
+    <x>28</x>
+    <y>339</y>
+    <width>150</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate</name>
+    <pv_name>LAB30-MICRO4:TypeL1_RBV</pv_name>
+    <x>290</x>
+    <y>342</y>
+    <width>61</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_1</name>
+    <pv_name>LAB30-MICRO4:SyringeVolumeL1</pv_name>
+    <x>351</x>
+    <y>341</y>
+    <width>70</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>TextUpdate_2</name>
+    <pv_name>LAB30-MICRO4:SyringeLengthL1</pv_name>
+    <x>426</x>
+    <y>340</y>
+    <width>56</width>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+    <format>6</format>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_2</name>
+    <text>PUMP NUMBER</text>
+    <x>32</x>
+    <y>39</y>
+    <width>116</width>
+    <tooltip>No description provided</tooltip>
+  </widget>
+  <widget type="group" version="3.0.0">
+    <name>Group</name>
+    <x>183</x>
+    <y>87</y>
+    <width>206</width>
+    <height>272</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="New Rule" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0 == 2">
+          <value>false</value>
+        </exp>
+        <pv_name>LAB30-MICRO4:PumpNumber_RBV</pv_name>
+      </rule>
+    </rules>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_6</name>
+      <pv_name>LAB30-MICRO4:TypeL1</pv_name>
+      <x>1</x>
+      <y>252</y>
+      <height>20</height>
+      <items>
+        <item>Type A</item>
+        <item>Type B</item>
+        <item>Type C</item>
+        <item>Type 1</item>
+        <item>Type 2</item>
+        <item>Type 3</item>
+        <item>Type 4</item>
+        <item>Type 5</item>
+        <item>Type 6</item>
+        <item>Type 7</item>
+        <item>Type 8</item>
+        <item>Type 9</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_5</name>
+      <pv_name>LAB30-MICRO4:VolumeCounterModeL1</pv_name>
+      <y>194</y>
+      <height>20</height>
+      <items>
+        <item>Delivered Volume</item>
+        <item>Remaining Volume</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_4</name>
+      <pv_name>LAB30-MICRO4:MotorDriveL1</pv_name>
+      <y>167</y>
+      <height>20</height>
+      <items>
+        <item>Smooth Drive</item>
+        <item>Max Load Drive</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_3</name>
+      <pv_name>LAB30-MICRO4:ModeL1</pv_name>
+      <y>141</y>
+      <height>20</height>
+      <items>
+        <item>Non-Grouped</item>
+        <item>Grouped</item>
+        <item>Disabled</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_2</name>
+      <pv_name>LAB30-MICRO4:RateUnitsL1</pv_name>
+      <y>114</y>
+      <height>20</height>
+      <items>
+        <item>nL/Sec</item>
+        <item>nL/Min</item>
+      </items>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Combo Box_1</name>
+      <pv_name>LAB30-MICRO4:PumpDirectionL1</pv_name>
+      <y>85</y>
+      <height>20</height>
+      <items>
+        <item>Infuse</item>
+        <item>Withdraw</item>
+      </items>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>TextEntry</name>
+      <pv_name>LAB30-MICRO4:DeliveryRateL1</pv_name>
+      <x>2</x>
+      <y>58</y>
+      <width>96</width>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>TextEntry</name>
+      <pv_name>LAB30-MICRO4:VolumeL1</pv_name>
+      <x>2</x>
+      <y>31</y>
+      <width>96</width>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Run</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL1</pv_name>
+      <text>Run</text>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_1</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Pause</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL1</pv_name>
+      <text>Pause</text>
+      <x>69</x>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_2</name>
+      <actions>
+        <action type="write_pv">
+          <description>Write PV</description>
+          <pv_name>$(pv_name)</pv_name>
+          <value>Stop</value>
+        </action>
+      </actions>
+      <pv_name>LAB30-MICRO4:PumpStateL1</pv_name>
+      <text>Stop</text>
+      <x>138</x>
+      <width>68</width>
+      <height>20</height>
+      <tooltip>$(actions)</tooltip>
+    </widget>
+  </widget>
+</display>
