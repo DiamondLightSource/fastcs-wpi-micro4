@@ -2,5 +2,9 @@
   {
     "version": "main",
     "url": "https://DiamondLightSource.github.io/fastcs-wpi-micro4/main/"
+  },
+  {
+    "version": "0.1.0",
+    "url": "https://DiamondLightSource.github.io/fastcs-wpi-micro4/0.1.0/"
   }
 ]
