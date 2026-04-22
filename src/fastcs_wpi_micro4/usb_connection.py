@@ -31,10 +31,10 @@ class StreamConnection:
         await self._lock.acquire()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         self._lock.release()
 
-    async def send_message(self, message) -> None:
+    async def send_message(self, message: str) -> None:
         self.writer.write(message.encode("utf-8"))
         await self.writer.drain()
 
@@ -64,10 +64,10 @@ class USBConnection(Tracer):
         return self.__connection
 
     async def connect(self, settings: USBConnectionSettings):
-        reader, writer = await serial_asyncio.open_serial_connection(
+        reader, writer = await serial_asyncio.open_serial_connection(  # type: ignore
             url=settings.port, baudrate=settings.baudrate
         )
-        self.__connection = StreamConnection(reader, writer)
+        self.__connection = StreamConnection(reader, writer)  # type: ignore
 
     async def send_command(self, message: str) -> None:
         async with self._connection as connection:
@@ -77,7 +77,7 @@ class USBConnection(Tracer):
         async with self._connection as connection:
             await connection.send_message(message)
             response = await connection.receive_response()
-            self.log_event(
+            self.log_event(  # type: ignore
                 "Received query response",
                 query=message.strip(),
                 response=response.strip(),

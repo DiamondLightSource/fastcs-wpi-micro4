@@ -34,7 +34,7 @@ class WpiMicro4Controller(Controller):
         self._usb_settings = settings
         self.connection = USBConnection()
 
-        super().__init__(
+        super().__init__(  # type: ignore
             ios=[
                 WpiMicro4ControllerValueSettingIO(self.connection),
                 WpiMicro4ControllerTypeSettingIO(self.connection),
@@ -81,9 +81,9 @@ class WpiMicro4Controller(Controller):
         # pump number
         attr_name = "pump_number"
         pump_command = "L"
-        pump_atrr_instance = AttrRW(
+        pump_atrr_instance = AttrRW(  # type: ignore
             Int(),
-            io_ref=WpiMicro4ControllerLineSettingIORef(
+            io_ref=WpiMicro4ControllerLineSettingIORef(  # type: ignore
                 pump_command,
             ),
             initial_value=1,
@@ -103,7 +103,7 @@ class WpiMicro4Controller(Controller):
                     attr_name,
                     AttrRW(
                         Float(prec=1),
-                        io_ref=WpiMicro4ControllerValueSettingIORef(
+                        io_ref=WpiMicro4ControllerValueSettingIORef(  # type: ignore
                             float_commands[j],
                             float_queries[j],
                             float_expeted_prefixes[j],
@@ -120,7 +120,7 @@ class WpiMicro4Controller(Controller):
                     attr_name,
                     AttrRW(
                         String(),
-                        io_ref=WpiMicro4ControllerCommandSettingIORef(
+                        io_ref=WpiMicro4ControllerCommandSettingIORef(  # type: ignore
                             string_queries[j],
                             string_expeted_prefixes[j],
                             line + 1,
@@ -136,7 +136,7 @@ class WpiMicro4Controller(Controller):
                     attr_name,
                     AttrR(
                         Float(),
-                        io_ref=WpiMicro4ControllerQueryIORef(
+                        io_ref=WpiMicro4ControllerQueryIORef(  # type: ignore
                             queries_only[j],
                             queries_only_expected_prefixes[j],
                             line + 1,
@@ -154,7 +154,7 @@ class WpiMicro4Controller(Controller):
                 attr_name,
                 AttrRW(
                     String(),
-                    io_ref=WpiMicro4ControllerStateSettingIORef(
+                    io_ref=WpiMicro4ControllerStateSettingIORef(  # type: ignore
                         state_query, state_query_prefix, line + 1, pump_atrr_instance
                     ),
                 ),
@@ -176,7 +176,7 @@ class WpiMicro4Controller(Controller):
                 attr_name,
                 AttrRW(
                     String(),
-                    io_ref=WpiMicro4ControllerTypeSettingIORef(
+                    io_ref=WpiMicro4ControllerTypeSettingIORef(  # type: ignore
                         ">", line + 1, att_volume, att_length, pump_atrr_instance
                     ),
                 ),

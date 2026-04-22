@@ -58,7 +58,7 @@ def ioc(pv_prefix: str = typer.Argument()):
     )
 
     # ...and pass them both to FastCS
-    launcher = FastCS(controller, [options])
+    launcher = FastCS(controller, [options])  # type: ignore
     # launcher.create_docs()
     # launcher.create_gui()
     launcher.run()  # type: ignore
