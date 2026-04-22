@@ -37,7 +37,7 @@ dev = [
 ]
 
 [project.scripts]
-fastcs-wpi-micro4 = "fastcs_wpi_micro4.__main__:main"
+fastcs-wpi-micro4 = "fastcs_wpi_micro4.__main__:app"
 
 [project.urls]
 GitHub = "https://github.com/DiamondLightSource/fastcs-wpi-micro4"
