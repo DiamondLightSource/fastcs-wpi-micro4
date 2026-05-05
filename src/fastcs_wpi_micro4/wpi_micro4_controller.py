@@ -48,6 +48,7 @@ class WpiMicro4Controller(Controller):
         self.creat_setting_attributes()
 
     async def connect(self):
+        self._connected = True
         await self.connection.connect(self._usb_settings)
 
     def creat_setting_attributes(self):

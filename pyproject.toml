@@ -12,7 +12,8 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 description = "FastCS support for Micro4 controller of UltraMircoPumpIII syringe pump."
-dependencies = ["fastcs", "softioc", "pvi", "pyserial-asyncio"] # Add project dependencies here, e.g. ["click", "numpy"]
+dependencies = ["fastcs[epics]==0.12.0"
+, "softioc", "pvi", "pyserial-asyncio"] # Add project dependencies here, e.g. ["click", "numpy"]
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"

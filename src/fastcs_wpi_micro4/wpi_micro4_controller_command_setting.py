@@ -20,11 +20,12 @@ class WpiMicro4ControllerCommandSettingNameDict:
     # maps names inserted by the user in the GUI to acuall Commands
     name_to_symbol = {
         "Infuse": "I",
+        "Withdraw": "W",
         "Paused": "U",
         "nL/Sec": "S",
         "nL/Min": "M",
         "Non-Grouped": "N",
-        "Grupped": "G",
+        "Grouped": "P",
         "Disabled": "D",
         "Max Load Drive": "BT",
         "Smooth Drive": "BS",
