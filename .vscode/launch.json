@@ -13,7 +13,7 @@
             "console": "integratedTerminal",
             "args": [
                 "ioc",
-                "LAB30-MICRO4",
+                "me18x-ea-spump-01",
             ]
         },
         {
