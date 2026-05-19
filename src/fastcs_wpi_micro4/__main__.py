@@ -30,7 +30,7 @@ def version_callback(value: bool):
 def main(
     # TODO: typer does not support `bool | None` yet
     # https://github.com/tiangolo/typer/issues/533
-    version: Optional[bool] = typer.Option(  # noqa
+    version: Optional[bool] = typer.Option(  # noqa # type: ignore
         None,
         "--version",
         callback=version_callback,
@@ -42,7 +42,7 @@ def main(
 
 
 @app.command()
-def ioc(pv_prefix: str = typer.Argument()):
+def ioc(pv_prefix: str = typer.Argument()):  # type: ignore
     ui_path = OPI_PATH if OPI_PATH.is_dir() else Path.cwd()
 
     connection_settings = USBConnectionSettings("/dev/ttyUSB0", 9600)
