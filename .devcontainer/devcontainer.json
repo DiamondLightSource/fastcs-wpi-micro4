@@ -38,7 +38,10 @@
         "--net=host",
         // Make sure SELinux does not disable with access to host filesystems like tmp
         "--security-opt=label=disable",
-        "--device=/dev/ttyUSB0:/dev/ttyUSB0"
+        "--group-add=keep-groups"
+    ],
+     "mounts": [
+        "source=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A10Q2NG8-if00-port0,target=/dev/ttyUSB0,type=bind"
     ],
     // Mount the parent as /workspaces so we can pip install peers as editable
     "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces,type=bind",
